@@ -1,0 +1,17 @@
+{
+    "name": "rv/todo-list",
+    "autoload": {
+        "psr-4": {
+            "MyApp\\": "src"
+        }
+    },
+    "authors": [
+        {
+            "name": "Arveez",
+            "email": "rv@arveez-news.com"
+        }
+    ],
+    "require": {
+        "cboden/ratchet": "^0.4.0"
+    }
+}
