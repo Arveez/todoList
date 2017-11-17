@@ -21,8 +21,8 @@ include '/home/rv/apache/www/projets_persos/todoList/src/script.php';
         </li>
     </ul>
 
-    <form method="post">
-        <input type="text" name="toBeAdded">
+    <form method="">
+        <input autofocus="autofocus" type="text" name="toBeAdded">
     </form>
 </div>
 <script>
@@ -30,7 +30,7 @@ include '/home/rv/apache/www/projets_persos/todoList/src/script.php';
     var app = new Vue({
         el: '#app',
         data: {
-            items: <?php echo $all; ?>
+            items: <?php echo $all ?>
 
                 /*[
                 {id: 22, text: 'jambon'},
@@ -43,14 +43,26 @@ include '/home/rv/apache/www/projets_persos/todoList/src/script.php';
 
     $(function () {
 
+        var all = '<?php echo $all; ?>';
+        console.log(all);
         var conn = new WebSocket('ws://localhost:8080');
         conn.onopen = function (e) {
             console.log("Connection established!");
         };
         conn.onmessage = function (e) {
             console.log(e.data);
-            deleteOne(e.data);
+            if ('refresh' != e.data) {
+
+                deleteOne(e.data);
+            } else {
+                location.reload();
+            }
         };
+
+        function createOne(name) {
+           console.log('create one: '+name);
+           conn.send(name);
+        }
 
         function deleteOne(id) {
             console.log('bootaaa');
@@ -66,6 +78,13 @@ include '/home/rv/apache/www/projets_persos/todoList/src/script.php';
                 }
             })
         }
+
+        $('form').on('submit', function(e) {
+            e.preventDefault();
+            console.log('form submitt');
+            createOne($(this).find('input').val());
+            $(this).find('input').val('');
+        });
 
         $('li').on('click', function() {
                 deleteOne(

@@ -1,5 +1,4 @@
 <?php
-//include 'Chat.php';
 $db = new PDO('mysql:host=localhost;dbname=errands', 'root', '²');
 
 function all()
@@ -13,4 +12,3 @@ function all()
     return json_encode($all);
 }
 $all = all();
-var_dump($all);
