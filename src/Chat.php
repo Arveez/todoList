@@ -13,18 +13,20 @@ class Chat implements MessageComponentInterface
 
     public function deleteOne($id)
     {
-        echo('deleteOne');
         $db = new PDO('mysql:host=localhost;dbname=errands', 'root', '²');
-        $req = $db->exec('DELETE FROM errands WHERE id=' . $id);
-        var_dump($req);
+        $db->exec('DELETE FROM errands WHERE id=' . $id);
+
     }
 
     public function createOne($name)
     {
-        var_dump('php create :' . $name);
         $db = new PDO('mysql:host=localhost;dbname=errands', 'root', '²');
         $req = $db->prepare('INSERT INTO errands (name) VALUES(:name)');
         $req->execute(array(':name' => $name));
+
+        $query = $db->query('SELECT * FROM errands WHERE id=LAST_INSERT_ID()');
+        $lastAddedProduct = json_encode($query->fetch(PDO::FETCH_ASSOC));
+        return $lastAddedProduct;
     }
 
 
@@ -46,7 +48,7 @@ class Chat implements MessageComponentInterface
         if (is_numeric($msg)) {
             $numRecv = count($this->clients) - 1;
             echo sprintf('Connection %d sending message "%s" to %d other connection%s' . "\n"
-                , $from->resourceId, $msg, $numRecv, $numRecv == 1 ? '' : 's');
+                , $from->resourceId, $msg, $numRecv, $numRecv < 2 ? '' : 's');
 
             foreach ($this->clients as $client) {
                 if ($from !== $client) {
@@ -58,10 +60,10 @@ class Chat implements MessageComponentInterface
 
 
         } else {
-            self::createOne($msg);
+            $product = self::createOne($msg);
             foreach ($this->clients as $client) {
-
-                    $client->send('refresh');
+                    var_dump($product);
+                    $client->send($product);
 
             }
         }

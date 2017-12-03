@@ -1,0 +1,26 @@
+body {
+    color: white;
+    background-color: lightgray;
+    padding: 100px;
+}
+#app {
+    background-color: rgba(0,0,0,.5);
+    margin: auto;
+    padding: 10px;
+    border-radius: 5px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+h1 {
+    text-align: center;
+}
+input {
+    width: 100%;
+}
+
+@media screen and (min-width: 800px) {
+    #app {
+        width: 40%;
+    }
+}
