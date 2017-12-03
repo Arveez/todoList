@@ -11,25 +11,6 @@ class Chat implements MessageComponentInterface
     protected $clients;
 
 
-    public function deleteOne($id)
-    {
-        $db = new PDO('mysql:host=localhost;dbname=errands', 'root', '²');
-        $db->exec('DELETE FROM errands WHERE id=' . $id);
-
-    }
-
-    public function createOne($name)
-    {
-        $db = new PDO('mysql:host=localhost;dbname=errands', 'root', '²');
-        $req = $db->prepare('INSERT INTO errands (name) VALUES(:name)');
-        $req->execute(array(':name' => $name));
-
-        $query = $db->query('SELECT * FROM errands WHERE id=LAST_INSERT_ID()');
-        $lastAddedProduct = json_encode($query->fetch(PDO::FETCH_ASSOC));
-        return $lastAddedProduct;
-    }
-
-
     public function __construct()
     {
         $this->clients = new \SplObjectStorage;
@@ -46,9 +27,8 @@ class Chat implements MessageComponentInterface
     public function onMessage(ConnectionInterface $from, $msg)
     {
         if (is_numeric($msg)) {
-            $numRecv = count($this->clients) - 1;
-            echo sprintf('Connection %d sending message "%s" to %d other connection%s' . "\n"
-                , $from->resourceId, $msg, $numRecv, $numRecv < 2 ? '' : 's');
+
+            self::deleteOne($msg);
 
             foreach ($this->clients as $client) {
                 if ($from !== $client) {
@@ -56,17 +36,28 @@ class Chat implements MessageComponentInterface
                     $client->send($msg);
                 }
             }
-            self::deleteOne($msg);
-
 
         } else {
-            $product = self::createOne($msg);
+            self::createOne($msg);
             foreach ($this->clients as $client) {
-                    var_dump($product);
-                    $client->send($product);
+                $client->send('newProduct');
 
             }
         }
+    }
+
+    public function deleteOne($id)
+    {
+        $db = new PDO('mysql:host=localhost;dbname=errands', 'root', '²');
+        $db->exec('DELETE FROM errands WHERE id=' . $id);
+
+    }
+
+    public function createOne($name)
+    {
+        $db = new PDO('mysql:host=localhost;dbname=errands', 'root', '²');
+        $req = $db->prepare('INSERT INTO errands (name) VALUES(:name)');
+        $req->execute(array(':name' => $name));
     }
 
 

@@ -32,64 +32,48 @@ include '/home/rv/apache/www/projets_persos/todoList/src/script.php';
         el: '#app',
         data: {
             items: <?php echo $all ?>
-
-                /*[
-                {id: 22, text: 'jambon'},
-                {id: 32, text: 'oeufs'},
-                {id: 3, text: 'vin'},
-                {id: 7, text: 'pain'}
-            ]*/
         }
     });
-    console.log(app.items);
 
     $(function () {
 
-        var all = '<?php echo $all; ?>';
-        console.log(all);
         var conn = new WebSocket('ws://192.168.0.1:8080');
+
         conn.onopen = function (e) {
             console.log("Connection established!");
         };
 
         conn.onmessage = function (e) {
-            console.log(e.data);
-
             if (e.data.isInteger) {
-
                 deleteOne(e.data);
+                console.log(e.data);
             } else {
-                var oneProduct = e.data;
-                console.log('reception : ' + e.data);
-                //app.items.push(e.data);
                 location.reload();
-                //app.items.push({"id":"125","name":"bleu"});
-                //location.reload();
-
             }
         };
 
         function createOne(name) {
-           console.log('create one: '+name);
            conn.send(name);
         }
 
         function deleteOne(id) {
-            toDel = id;
+            idToDel = id;
             app.items.forEach(function (el) {
-                if (el.id == toDel) {
+                if (el.id == idToDel) {
                     itemIndex = app.items.indexOf(el);
                     if (app.items.splice(itemIndex, 1)) {
-                        conn.send(toDel);
+                        conn.send(idToDel);
                     }
                 }
             })
         }
 
-        $('form').on('submit', function(e) {
-            e.preventDefault();
-            console.log('form submitt');
-            createOne($(this).find('input').val());
+        $('form').on('submit', function(event) {
+            event.preventDefault();
+
+            var toAddName = $(this).find('input').val();
+            createOne(toAddName);
+
             $(this).find('input').val('');
         });
 
@@ -97,9 +81,7 @@ include '/home/rv/apache/www/projets_persos/todoList/src/script.php';
                 deleteOne(
                     $(this).attr('id'))
             }
-
         );
-
 
     });
 
